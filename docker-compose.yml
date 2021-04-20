@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  personservice:
+    image: ${DOCKER_REGISTRY-}personservice
+    build:
+      context: .
+      dockerfile: PersonService\Dockerfile
