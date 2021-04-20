@@ -10,6 +10,7 @@ using PersonService.Models;
 using static Common.DependencyInjection.Utilities;
 using Common.MessageQueue;
 using Common.Utilities;
+using Microsoft.AspNetCore.Routing;
 
 namespace PersonService.Controllers
 {
@@ -32,8 +33,8 @@ namespace PersonService.Controllers
         }
 
         // GET: api/Person/5
-        [HttpGet("{id}", Name = "GetByPersonId")]
-        public IActionResult Get(int id)
+        [HttpGet("{id}", Name = nameof(GetByPersonId))]
+        public IActionResult GetByPersonId(int id)
         {
             var Person = _personRepository.GetPersonById(id);
             return new OkObjectResult(Person);
@@ -42,6 +43,7 @@ namespace PersonService.Controllers
 
         // POST: api/Person
         [HttpPost]
+        [ActionName(nameof(Post))]
         public IActionResult Post([FromBody] Person person)
         {
             using (var scope = new TransactionScope())
@@ -50,7 +52,7 @@ namespace PersonService.Controllers
                 scope.Complete();
                 var ss = DependencyInjection.GetService<IMessageQueue>();
                 ss.SendMessage(Utils.SerializeObject<Person>(person), "PersonQueue", "Person");
-                return new CreatedAtActionResult(nameof(Get), nameof(PersonController), new { id = person.Id }, person);
+                return CreatedAtRoute(routeName: "GetByPersonId", routeValues: new { id = person.Id}, value: person);
             }
         }
 
@@ -71,7 +73,7 @@ namespace PersonService.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")]        
         public void Delete(int id)
         {
         }

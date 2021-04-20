@@ -30,11 +30,9 @@ namespace PersonService.DBContexts
                     DOB = Convert.ToDateTime("1998-11-01"),
                 }
             );
+            modelBuilder.Entity<Event>()
+               .HasOne(z => z.Person);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer("<connection string goes here>");
-        }
+       
     }
 }

@@ -47,12 +47,15 @@ namespace PersonService.Controllers
 
             using (var scope = new TransactionScope())
             {
-                Person person = _personRepository.GetPersonById(evt.Person.Id);
+                Person person = _personRepository.GetPersonByNameAndDob(evt.Person.Name, evt.Person.DOB);
                 bool isPersonExists = false;
-                if(person != null) { isPersonExists = true; }
+                if(person != null) {
+                    isPersonExists = true;
+                    evt.Person = person;
+                }
                 _eventRepository.InsertEvent(evt, isPersonExists);
                 scope.Complete();
-                return new CreatedAtActionResult(nameof(Get), nameof(PersonController), new { id = evt.Id }, evt);
+                return CreatedAtRoute(routeName: "GetById", routeValues: new { id = evt.Id }, value: evt);
             }
         }
 

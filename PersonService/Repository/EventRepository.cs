@@ -3,6 +3,7 @@ using PersonService.DBContexts;
 using PersonService.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,9 +30,15 @@ namespace PersonService.Repository
 
         public Event InsertEvent(Event evt, bool isPersonExists)
         {
-
-            _dbContext.Events.Attach(evt);
-            _dbContext.Entry(evt).State = EntityState.Added;
+            if (isPersonExists)
+            {
+                _dbContext.Events.Attach(evt);
+                _dbContext.Entry(evt).State = EntityState.Added;
+            }
+            else
+            {
+                _dbContext.Events.Add(evt);
+            }
 
             Save();
             return evt;
